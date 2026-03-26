@@ -4,9 +4,10 @@ Global / excludeLintKeys += scalacOptions
 // All Twitter library releases are date versioned as YY.MM.patch
 val releaseVersion = "24.8.0-SNAPSHOT"
 
-val logbackVersion = "1.2.11"
-val opencensusVersion = "0.19.1"
-val slf4jVersion = "1.7.30"
+val logbackVersion = "1.5.32"
+val log4j2Version = "2.25.3"
+val opencensusVersion = "0.31.1"
+val slf4jVersion = "2.0.17"
 
 def util(which: String) = "com.twitter" %% ("util-" + which) % releaseVersion
 def finagle(which: String) = "com.twitter" %% ("finagle-" + which) % releaseVersion
@@ -50,12 +51,12 @@ lazy val sharedSettings = Seq(
   libraryDependencies ++= Seq(
     // See https://www.scala-sbt.org/0.13/docs/Testing.html#JUnit
     "com.novocode" % "junit-interface" % "0.11" % "test",
-    "org.mockito" % "mockito-all" % "1.9.5" % "test",
-    "org.scalacheck" %% "scalacheck" % "1.15.4" % "test",
-    "org.scalatest" %% "scalatest" % "3.1.2" % "test",
-    "org.scalatestplus" %% "junit-4-12" % "3.1.2.0" % "test",
+    "org.mockito" % "mockito-all" % "1.10.19" % "test",
+    "org.scalacheck" %% "scalacheck" % "1.19.0" % "test",
+    "org.scalatest" %% "scalatest" % "3.2.20" % "test",
+    "org.scalatestplus" %% "junit-4-12" % "3.2.2.0" % "test",
     "org.scalatestplus" %% "mockito-1-10" % "3.1.0.0" % "test",
-    "org.scalatestplus" %% "scalacheck-1-14" % "3.1.2.0" % "test"
+    "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0" % "test"
   ),
   ivyXML :=
     <dependencies>
@@ -197,9 +198,10 @@ lazy val twitterServerSlf4jLog4j12 = (project in file("slf4j-log4j12"))
     moduleName := "twitter-server-slf4j-log4j12",
     sharedSettings)
   .settings(libraryDependencies ++= Seq(
-    "log4j" % "log4j" % "1.2.17" % "provided",
+    "org.apache.logging.log4j" % "log4j-1.2-api" % log4j2Version % "provided",
+    "org.apache.logging.log4j" % "log4j-core" % log4j2Version % "provided",
     "org.slf4j" % "slf4j-api" % slf4jVersion,
-    "org.slf4j" % "slf4j-log4j12" % slf4jVersion,
+    "org.apache.logging.log4j" % "log4j-slf4j2-impl" % log4j2Version,
     "org.slf4j" % "jcl-over-slf4j" % slf4jVersion,
     "org.slf4j" % "jul-to-slf4j" % slf4jVersion
   ))

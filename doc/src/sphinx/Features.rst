@@ -513,6 +513,7 @@ trait is built.
 .. |twitter-server/slf4j-log4j12| replace:: ``twitter-server/slf4j-log4j12``
 .. _twitter-server/slf4j-log4j12 : https://github.com/twitter/twitter-server/tree/develop/slf4j-log4j12
 
+
 .. |twitter-server/logback-classic| replace:: ``twitter-server/logback-classic``
 .. _twitter-server/logback-classic : https://github.com/twitter/twitter-server/tree/develop/logback-classic
 
