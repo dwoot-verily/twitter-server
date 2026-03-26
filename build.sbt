@@ -16,37 +16,9 @@ lazy val noPublishSettings = Seq(
 )
 
 def gcJavaOptions: Seq[String] = {
-  val javaVersion = System.getProperty("java.version")
-  if (javaVersion.startsWith("1.8")) {
-    jdk8GcJavaOptions
-  } else {
-    jdk11GcJavaOptions
-  }
-}
-
-def jdk8GcJavaOptions: Seq[String] = {
   Seq(
-    "-XX:+UseParNewGC",
-    "-XX:+UseConcMarkSweepGC",
-    "-XX:+CMSParallelRemarkEnabled",
-    "-XX:+CMSClassUnloadingEnabled",
+    "-XX:+UseG1GC",
     "-XX:ReservedCodeCacheSize=128m",
-    "-XX:SurvivorRatio=128",
-    "-XX:MaxTenuringThreshold=0",
-    "-Xss8M",
-    "-Xms512M",
-    "-Xmx2G"
-  )
-}
-
-def jdk11GcJavaOptions: Seq[String] = {
-  Seq(
-    "-XX:+UseConcMarkSweepGC",
-    "-XX:+CMSParallelRemarkEnabled",
-    "-XX:+CMSClassUnloadingEnabled",
-    "-XX:ReservedCodeCacheSize=128m",
-    "-XX:SurvivorRatio=128",
-    "-XX:MaxTenuringThreshold=0",
     "-Xss8M",
     "-Xms512M",
     "-Xmx2G"
@@ -72,8 +44,8 @@ def travisTestJavaOptions: Seq[String] = {
 lazy val sharedSettings = Seq(
   version := releaseVersion,
   organization := "com.twitter",
-  scalaVersion := "2.13.6",
-  crossScalaVersions := Seq("2.12.12", "2.13.6"),
+  scalaVersion := "2.13.18",
+  crossScalaVersions := Seq("2.13.18"),
   Test / fork := true, // We have to fork to get the JavaOptions
   libraryDependencies ++= Seq(
     // See https://www.scala-sbt.org/0.13/docs/Testing.html#JUnit
@@ -92,7 +64,7 @@ lazy val sharedSettings = Seq(
       <exclude org="javax.jms" module="jms" />
     </dependencies>,
   scalacOptions ++= Seq(
-    "-target:jvm-1.8",
+    "-release:21",
     "-deprecation",
     "-unchecked",
     "-feature",
@@ -100,15 +72,17 @@ lazy val sharedSettings = Seq(
     "-encoding",
     "utf8"
   ),
-  javacOptions ++= Seq("-Xlint:unchecked", "-source", "1.8", "-target", "1.8"),
-  doc / javacOptions := Seq("-source", "1.8"),
+  javacOptions ++= Seq("-Xlint:unchecked", "-source", "21", "-target", "21"),
+  doc / javacOptions := Seq("-source", "21"),
   javaOptions ++= Seq(
     "-Djava.net.preferIPv4Stack=true",
-    "-XX:+AggressiveOpts",
     "-server"
   ),
   javaOptions ++= gcJavaOptions,
   Test / javaOptions ++= travisTestJavaOptions,
+  Test / javaOptions ++= Seq(
+    "--add-opens=java.base/java.lang=ALL-UNNAMED"
+  ),
   // This is bad news for things like com.twitter.util.Time
   Test / parallelExecution := false,
   // -a: print stack traces for failing asserts
