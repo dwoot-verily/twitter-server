@@ -82,7 +82,11 @@ lazy val sharedSettings = Seq(
   javaOptions ++= gcJavaOptions,
   Test / javaOptions ++= travisTestJavaOptions,
   Test / javaOptions ++= Seq(
-    "--add-opens=java.base/java.lang=ALL-UNNAMED"
+    "--add-opens=java.base/java.lang=ALL-UNNAMED",
+    "--add-opens=java.base/java.util=ALL-UNNAMED",
+    "--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED",
+    "--add-opens=java.base/java.util.concurrent.locks=ALL-UNNAMED",
+    "--add-opens=java.base/java.security.cert=ALL-UNNAMED"
   ),
   // This is bad news for things like com.twitter.util.Time
   Test / parallelExecution := false,
@@ -187,6 +191,11 @@ lazy val twitterServerSlf4jJdk14 = (project in file("slf4j-jdk14"))
   .settings(libraryDependencies ++= Seq(
     "org.slf4j" % "slf4j-api" % slf4jVersion,
     "org.slf4j" % "slf4j-jdk14" % slf4jVersion,
+    // jul-to-slf4j is needed so SLF4JBridgeHandler class is available at runtime
+    // (required by util-slf4j-jul-bridge). The Logging trait ensures the handler
+    // is immediately removed after the Slf4jBridge mixin installs it, preventing
+    // the SLF4J->JUL->SLF4J infinite loop.
+    "org.slf4j" % "jul-to-slf4j" % slf4jVersion,
     "org.slf4j" % "jcl-over-slf4j" % slf4jVersion,
     "org.slf4j" % "log4j-over-slf4j" % slf4jVersion
   ))

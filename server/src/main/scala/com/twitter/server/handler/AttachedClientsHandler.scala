@@ -2,7 +2,7 @@ package com.twitter.server.handler
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.annotation.{JsonFormat, JsonInclude}
-import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonNaming
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
@@ -17,12 +17,12 @@ private[handler] object AttachedClientsHandler {
 
   case class ClientConnectionEntry(address: SocketAddress, ssl: Option[ClientSslInfo])
 
-  @JsonNaming(classOf[PropertyNamingStrategy.SnakeCaseStrategy])
+  @JsonNaming(classOf[PropertyNamingStrategies.SnakeCaseStrategy])
   case class PeerCertInfo(
     commonName: String,
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "UTC") expiry: Date)
 
-  @JsonNaming(classOf[PropertyNamingStrategy.SnakeCaseStrategy])
+  @JsonNaming(classOf[PropertyNamingStrategies.SnakeCaseStrategy])
   @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_ABSENT)
   case class ClientSslInfo(
     sessionId: String,

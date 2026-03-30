@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.{
   MappingJsonFactory,
   ObjectMapper,
   ObjectWriter,
-  PropertyNamingStrategy
+  PropertyNamingStrategies
 }
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.twitter.finagle.http.{Response, Status, Version}
@@ -86,5 +86,5 @@ object AdminJsonConverter extends JsonConverterBase {
     new ObjectMapper(factory)
       .registerModule(DefaultScalaModule)
       .registerModule(MetricSchemaJsonModule)
-      .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+      .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
 }

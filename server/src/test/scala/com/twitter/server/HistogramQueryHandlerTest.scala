@@ -1,6 +1,6 @@
 package com.twitter.server
 
-import com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategy}
+import com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategies}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.ScalaObjectMapper
 import com.twitter.conversions.DurationOps._
@@ -15,7 +15,7 @@ class HistogramQueryHandlerTest extends AnyFunSuite {
   private[this] val mapper = new ObjectMapper with ScalaObjectMapper {
     registerModule(DefaultScalaModule)
   }
-  mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+  mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
 
   test("histograms.json works with no stats") {
     val sr = new InMemoryStatsReceiver

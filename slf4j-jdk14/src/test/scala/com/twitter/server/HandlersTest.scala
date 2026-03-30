@@ -12,16 +12,27 @@ import java.net.InetSocketAddress
 import java.util.logging.Logger
 import java.util.logging.SimpleFormatter
 import java.util.logging.StreamHandler
+import org.slf4j.bridge.SLF4JBridgeHandler
 import scala.collection.mutable
 import org.scalatest.funsuite.AnyFunSuite
 
+// Pre-install SLF4JBridgeHandler at class-loading time.
+// Slf4jBridgeUtility checks isInstalled before installing; by pre-installing
+// here we ensure it skips its install+info() call, which is what triggers the
+// SLF4J->JUL->SLF4J infinite loop when slf4j-jdk14 is on the classpath.
+// The handler is removed again inside the slf4j-jdk14 Logging trait body.
+private object Slf4jBridgeLoopGuard {
+  SLF4JBridgeHandler.removeHandlersForRootLogger()
+  SLF4JBridgeHandler.install()
+}
+
 /** Test TwitterServer which overrides the admin.port to localhost ephemeral port */
-class TestTwitterServer extends TwitterServer {
+class TestTwitterServer extends com.twitter.server.slf4j.jdk14.AbstractTwitterServer {
   override val defaultAdminPort = 0
 
   val bootstrapSeq: mutable.ArrayBuffer[Symbol] = mutable.ArrayBuffer.empty[Symbol]
 
-  def main(): Unit = {
+  override def main(): Unit = {
     bootstrapSeq += 'Main
   }
 
@@ -50,6 +61,9 @@ class MockExceptionHandler extends Service[Request, Response] {
 }
 
 class HandlersTest extends AnyFunSuite {
+
+  // Force the guard to initialise before any TestTwitterServer is constructed.
+  Slf4jBridgeLoopGuard
 
   test("Exceptions thrown in handlers include stack traces") {
     val twitterServer: TwitterServer = new TestTwitterServer {
